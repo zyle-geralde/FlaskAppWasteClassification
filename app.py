@@ -56,4 +56,4 @@ def predict():
     return "Something went wrong!", 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
