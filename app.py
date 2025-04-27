@@ -4,6 +4,10 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 import os
 
+import tempfile
+from werkzeug.utils import secure_filename
+
+
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -21,7 +25,7 @@ class_labels = ['O', 'R']
 def index():
     return render_template('index.html')
 
-# Route to handle image prediction
+
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'file' not in request.files:
@@ -33,9 +37,11 @@ def predict():
         return "No selected file!", 400
 
     if file:
-        # Save the uploaded file
-        file_path = os.path.join('static/uploads', file.filename)
-        file.save(file_path)
+        # Create a temporary file using tempfile
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            file_path = temp_file.name
+            # Save the uploaded file content to the temp file
+            file.save(temp_file)
 
         # Preprocess the image
         img = image.load_img(file_path, target_size=(IMG_HEIGHT, IMG_WIDTH))
